@@ -1,0 +1,43 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#9E073F</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="DialogAnim">
+        <item name="android:windowEnterAnimation">@anim/slide_zoon_in</item>
+    </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:background">#9E073F</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="AppTheme.Push_up_anim">
+        <item name="android:windowEnterAnimation">@anim/slide_top_to_bottom</item>
+    </style>
+    <style name="AppTheme.Slide_in_left">
+        <item name="android:windowEnterAnimation">@anim/slide_in_left</item>
+    </style>
+
+    <style name="AppTheme.Slide_in_right">
+        <item name="android:windowEnterAnimation">@anim/slide_in_right</item>
+    </style>
+
+    <style name="AppTheme.Slide_out_right">
+        <item name="android:windowExitAnimation">@anim/slide_out_right</item>
+    </style>
+</resources>

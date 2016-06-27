@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Weather by zip</string>
+    <string name="title_activity_main">Weather by zip</string>
+    <string name="add_zip">Add Zip</string>
+    <string name="input_prompt">Please enter a zip code you want search for weather info:</string>
+    <string name="add_zip_code">Add Zip code</string>
+    <string name="high">High:</string>
+    <string name="low">Low:</string>
+    <string name="humidity">Humidity</string>
+    <string name="feels_like">Feels like</string>
+</resources>
