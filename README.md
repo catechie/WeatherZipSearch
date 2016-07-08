@@ -8,3 +8,5 @@ https://github.com/catechie/WeatherZipSearch/blob/master/device-2016-06-27-00090
 any feedback, please send to catechie@gmail.com
 
 Thanks:-)
+
+linkedin: https://www.linkedin.com/in/dongchi-wang-b412973
