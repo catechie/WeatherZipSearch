@@ -1,5 +1,5 @@
 # WeatherZipSearch
-Weather info queried from wuderground Restful webservices in json format, parsed and presented in Android Views with animation...used http response cache, Gson...
+Weather info queried by zip code from wuderground Restful webservices, result came back in json format had been parsed and presented in Android Views with animation...used http response cache, Gson...
 
 for immediate preview for finished app, please view mp4 video: 
 
