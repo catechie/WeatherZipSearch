@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class ProcessWeatherHttpRequestTask extends AsyncTask<String, Void, String> {
+    private static class ProcessWeatherHttpRequestTask extends AsyncTask<String, Void, String> {
         String url = "";
         String zip;
         @Override
