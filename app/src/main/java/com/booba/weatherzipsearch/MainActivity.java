@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,6 +30,7 @@ import android.widget.Toast;
 import com.booba.common.DownloadByteArrayOutputStreamUtil;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,11 +60,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getWindow().setWindowAnimations(R.style.AppTheme_Push_up_anim);
+        //getWindow().setWindowAnimations(R.style.AppTheme_Push_up_anim);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(" " + getString(R.string.app_name));
-        toolbar.setLogo(R.mipmap.weather_icon);
-        setSupportActionBar(toolbar);
+        if (toolbar != null) {
+
+            toolbar.setTitle(" " + getString(R.string.app_name));
+            toolbar.setLogo(R.mipmap.weather_icon);
+            setSupportActionBar(toolbar);
+        }
 
         mWeatherPreferences = getSharedPreferences(WEATHER_ZIP_PREF, MODE_PRIVATE); //get the preference file or create it if not existing
 
@@ -80,12 +86,42 @@ public class MainActivity extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String zip = ((TextView) view).getText().toString();
                     makeWeatherApiCall(ENDPOINT.replace("~", zip), null);
+
                 }
             });
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
+                    PopupMenu menu = new PopupMenu(MainActivity.this, view);
+                    menu.getMenuInflater().inflate(R.menu.popup_menu, menu.getMenu());
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            deleteListItem(view);
+                            mAdapter.notifyDataSetChanged();
+                            return true;
+                        }
+                    });
+                    menu.show();
+                    return true;
+                }
+            });
+
+            listView.clearAnimation();
+            listView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_top_to_bottom ));
         }
-        /*listView.clearAnimation();
-        listView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_top_to_bottom ));*/
+
         DownloadByteArrayOutputStreamUtil.enableHttpResponseCache(this);
+    }
+
+    private boolean deleteListItem(View v) {
+        String zip = ((TextView) v).getText().toString();
+        if (mZipSet.remove(zip)) {
+            mPrefArrayList.remove(zip);
+            DownloadByteArrayOutputStreamUtil.applyPrefSetChanges(mZipPrefName, mZipSet, mWeatherPreferences);
+            Snackbar.make(findViewById(R.id.coordinator_snack), "Zip code, " + zip + ", has been removed.", Snackbar.LENGTH_LONG).show();
+        }
+        return true;
     }
 
     @Override
@@ -98,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void makeWeatherApiCall(String url, String zip) {
-        new ProcessWeatherHttpRequestTask().execute(url, zip);
+        new ProcessWeatherHttpRequestTask(new WeakReference<>(this)).execute(url, zip);
     }
 
     @Override
@@ -183,13 +219,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class ProcessWeatherHttpRequestTask extends AsyncTask<String, Void, String> {
+    private static class ProcessWeatherHttpRequestTask extends AsyncTask<String, Void, String> {
         String url = "";
         String zip;
+        private WeakReference<MainActivity> weakReference;
+
+        public ProcessWeatherHttpRequestTask(WeakReference<MainActivity> weakReference) {
+            this.weakReference = weakReference;
+        }
+
         @Override
         protected String doInBackground(String... params) {
             url = params[0];
             zip = params[1];
+
             ByteArrayOutputStream httpResponse = DownloadByteArrayOutputStreamUtil.getHttpResponse(url);
 
             if (httpResponse != null) {
@@ -202,15 +245,15 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String jsonString) {
 
             if (jsonString == null) {
-                Toast.makeText(MainActivity.this, "The server is busy, please wait for 10 minutes and search again...", Toast.LENGTH_LONG).show();
-                finish();
+                Toast.makeText(weakReference.get(), "The server is busy, please wait for 10 minutes and search again...", Toast.LENGTH_LONG).show();
+                weakReference.get().finish();
             }
             else {
                 Log.i(TAG, "url: " + url);
-                Intent intent = new Intent(MainActivity.this, WeatherDetail.class);
+                Intent intent = new Intent(weakReference.get(), WeatherDetail.class);
                 intent.putExtra(JSON_RESULT, jsonString);
                 intent.putExtra(INPUT_ZIP_CODE, zip);
-                startActivityForResult(intent, WEATHER_DETAIL_REQUEST_CODE);
+                weakReference.get().startActivityForResult(intent, WEATHER_DETAIL_REQUEST_CODE);
 
             }
             DownloadByteArrayOutputStreamUtil.LogHttpCacheHits(TAG);

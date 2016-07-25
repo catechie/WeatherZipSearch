@@ -11,7 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,20 +32,21 @@ public class WeatherDetail extends AppCompatActivity {
 
     private SparseArray<String> stringSparseArray;
     private String input_zip;
-
+    private RelativeLayout mRelativeLayout;
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_detail);
-        getWindow().setWindowAnimations(R.style.AppTheme_Slide_in_right);
+        //getWindow().setWindowAnimations(R.style.AppTheme_Slide_in_right);
 
         String jsonString = getIntent().getStringExtra(MainActivity.JSON_RESULT);
         input_zip = getIntent().getStringExtra(MainActivity.INPUT_ZIP_CODE);
 
         AsyncTask<String, Void, SparseArray> asyncTask = taskOfPopulateView();
         asyncTask.execute(jsonString);
-
+        mRelativeLayout = (RelativeLayout) findViewById(R.id.weather_content);
+        mRelativeLayout.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
     }
 
     private AsyncTask<String, Void, SparseArray> taskOfPopulateView() {
@@ -103,8 +106,10 @@ public class WeatherDetail extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         getWindow().setWindowAnimations(R.style.AppTheme_Slide_out_right);
+       // mRelativeLayout.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_right));
+        super.onBackPressed();
+
     }
 
     private SparseArray<String> parseJsonString(String jsonString) {

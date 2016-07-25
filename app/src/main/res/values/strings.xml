@@ -8,4 +8,5 @@
     <string name="low">Low:</string>
     <string name="humidity">Humidity</string>
     <string name="feels_like">Feels like</string>
+    <string name="delete_zip">delete zip code</string>
 </resources>
